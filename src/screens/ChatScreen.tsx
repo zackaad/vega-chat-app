@@ -98,7 +98,7 @@ const ChatScreen: React.FC = () => {
       )}
       <View style={styles.messageContent}>
         <Text style={styles.senderName}>
-          {userDisplayName}:
+          {item.userID}:
         </Text>
         <Text style={styles.messageText}>
           {item.text}
