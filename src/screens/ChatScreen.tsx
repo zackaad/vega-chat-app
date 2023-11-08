@@ -88,31 +88,31 @@ const ChatScreen: React.FC = () => {
   return (
     <View style={styles.container}>
       <FlatList
-        ref={(ref) => (flatListRef.current = ref)}
-        data={messages}
-        keyExtractor={(item) => item.id}
-        renderItem={({ item }) => (
-          <View style={styles.message}>
-            {userPhotoURL && (
-              <Image source={{ uri: userPhotoURL }} style={styles.userImage} />
-            )}
-            <View style={styles.messageContent}>
-              <Text style={styles.senderName}>
-                {userDisplayName}:
-              </Text>
-              <Text style={styles.messageText}>
-                {item.text}
-              </Text>
-            </View>
-          </View>
-        )}
-        onContentSizeChange={() => {
-          // Automatically scroll to the bottom when content size changes (new message)
-          if (flatListRef.current) {
-            flatListRef.current.scrollToEnd({ animated: true });
-          }
-        }}
-      />
+  ref={(ref) => (flatListRef.current = ref)}
+  data={messages}
+  keyExtractor={(item) => item.id}
+  renderItem={({ item }) => (
+    <View style={item.userID === userDisplayName ? styles.senderMessageContainer : styles.message}>
+      {userPhotoURL && (
+        <Image source={{ uri: userPhotoURL }} style={styles.userImage} />
+      )}
+      <View style={styles.messageContent}>
+        <Text style={styles.senderName}>
+          {userDisplayName}:
+        </Text>
+        <Text style={styles.messageText}>
+          {item.text}
+        </Text>
+      </View>
+    </View>
+  )}
+  onContentSizeChange={() => {
+    // Automatically scroll to the bottom when content size changes (new message)
+    if (flatListRef.current) {
+      flatListRef.current.scrollToEnd({ animated: true });
+    }
+  }}
+/>
       <View style={styles.inputContainer}>
         <TextInput
           style={styles.input}
@@ -127,6 +127,19 @@ const ChatScreen: React.FC = () => {
 };
 
 const styles = StyleSheet.create({
+  senderMessageContainer: {
+    flexDirection: 'row', // Arrange contents in a row
+    alignItems: 'center', // Align items vertically
+    backgroundColor: '#add8e6', // Light blue background color
+    padding: 8,
+    marginVertical: 8,
+    marginHorizontal: 16,
+    borderRadius: 8,
+  },
+  senderMessageText: {
+    color: 'white', // White text color for the sender's message
+    fontSize: 16,
+  },
   container: {
     flex: 1,
     padding: 16,
