@@ -30,9 +30,9 @@ const LoginScreen: React.FC = ({ navigation }) => {
     }
   }
   return (
-    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#8B31E6' }}>
       {loading ? (
-        <ActivityIndicator size="large" color="#0000ff" />
+        <ActivityIndicator size="large" color="#FFFFFF" />
       ) : (
         <GoogleSigninButton
           style={{ width: 192, height: 48 }}

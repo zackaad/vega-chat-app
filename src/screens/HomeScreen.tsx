@@ -57,7 +57,6 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
             <Image source={{ uri: user.photoURL }} style={styles.userImage} />
           )}
           <View style={styles.userInfo}>
-            <Text>Welcome, {user.displayName}</Text>
             <TouchableOpacity style={styles.signOutButton} onPress={signOut}>
               <Text style={styles.buttonText}>Sign Out</Text>
             </TouchableOpacity>
@@ -67,7 +66,7 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
         <Text>Not signed in</Text>
       )}
       <Text style={styles.heading}>Welcome {user?.displayName}</Text>
-      <Text style={styles.heading}>Chat Rooms:</Text>
+      <Text style={styles.heading}>Choose a chatroom:</Text>
       <FlatList
         data={chatRooms}
         keyExtractor={(item) => item.id}
@@ -100,13 +99,15 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#f0f0f0',
+    backgroundColor: '#8B31E6', // Set the background color to purple
   },
   activeRoom: {
     opacity: 0.7,
   },
   heading: {
     fontSize: 18,
+    color: 'white',
+    padding: 50 
   },
   chatRoomList: {
     justifyContent: 'center',
@@ -138,7 +139,7 @@ const styles = StyleSheet.create({
   },
   signOutButton: {
     padding: 10,
-    backgroundColor: 'red',
+    backgroundColor: 'grey',
     borderRadius: 5,
     marginTop: 10,
   },

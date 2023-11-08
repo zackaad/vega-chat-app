@@ -143,7 +143,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 16,
-    backgroundColor: '#f0f0f0',
+    backgroundColor: '#8B31E6'
   },
   message: {
     flexDirection: 'row',
@@ -178,6 +178,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
     borderRadius: 8,
     marginTop: 16,
+
   },
   input: {
     flex: 1,
