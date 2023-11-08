@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef} from 'react';
 import { View, Text, FlatList, StyleSheet, TextInput, Button, Image} from 'react-native';
 import app from '../config/config';
-import { collection, addDoc, Firestore, serverTimestamp, getFirestore, orderBy, query, onSnapshot } from 'firebase/firestore'; 
+import { collection, addDoc, Firestore, serverTimestamp, getFirestore, orderBy, query, onSnapshot, limit } from 'firebase/firestore'; 
 import db from '../config/config';
 import 'firebase/auth';
 import { useRoute } from '@react-navigation/native';
@@ -9,19 +9,33 @@ import { useRoute } from '@react-navigation/native';
 interface RouteParams {
   userDisplayName: string | undefined;
   userPhotoURL: string | undefined;
+  currentRoomNumber: string | undefined;
 }
 
 const ChatScreen: React.FC = () => {
   const [message, setMessage] = useState<string>('');
   const [messages, setMessages] = useState<any[]>([]); 
-  const messagesCollection = collection(db, 'messages');
+ 
+
+ 
   const route = useRoute();
-  const { userDisplayName, userPhotoURL } = route.params as RouteParams;
+  const { userDisplayName, userPhotoURL, currentRoomNumber } = route.params as RouteParams;
   const flatListRef = useRef<FlatList | null>(null);
+  const messageCollection = collection(
+    db,
+    `chatRooms/room/${currentRoomNumber}`
+  );
+
+
+
+
 
   useEffect(() => {
-    const q = query(messagesCollection, orderBy('timestamp'));
 
+    
+    const q = query(messageCollection, orderBy('timestamp'), limit(50));
+
+    
     const unsubscribe = onSnapshot(q, (querySnapshot) => {
       const newMessages: any[] = [];
       querySnapshot.forEach((doc) => {
@@ -41,17 +55,20 @@ const ChatScreen: React.FC = () => {
     
     if (message === '') return;
 
+    console.log(`chatRooms/room/${currentRoomNumber}`)
+
    
     const newMessage = {
       text: message,
       timestamp: serverTimestamp(),
-      userID: userDisplayName
+      userID: userDisplayName,
+      
     };
 
     setMessage('');
 
     try {
-      const docRef = await addDoc(messagesCollection, newMessage);
+      const docRef = await addDoc(messageCollection, newMessage);
       console.log('Document written');
     } catch (error) {
       console.error('Error adding document: ', error);

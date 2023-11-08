@@ -3,9 +3,12 @@ import { View, Text, TouchableOpacity, FlatList, StyleSheet, Image } from 'react
 import auth, { FirebaseUser } from '@react-native-firebase/auth';
 import { GoogleSignin, GoogleSigninButton } from '@react-native-google-signin/google-signin';
 
+
 GoogleSignin.configure({
   webClientId: '576966639179-laprvni5190t516hgub7dpcj3u0fpaho.apps.googleusercontent.com',
 });
+
+
 
 interface ChatRoom {
   id: string;
@@ -25,6 +28,7 @@ const chatRooms: ChatRoom[] = [
 
 const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
   const [user, setUser] = useState<FirebaseUser | null>(null);
+  const [currentRoomNumber, setCurrentRoomNumber] = useState<string>('1') ;
 
   function onAuthStateChanged(user: FirebaseUser | null) {
     setUser(user);
@@ -62,23 +66,29 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
       ) : (
         <Text>Not signed in</Text>
       )}
-      <Text style={styles.heading}>Welcome {user?.displayName}. Chat Rooms:</Text>
+      <Text style={styles.heading}>Welcome {user?.displayName}</Text>
+      <Text style={styles.heading}>Chat Rooms:</Text>
       <FlatList
         data={chatRooms}
         keyExtractor={(item) => item.id}
         contentContainerStyle={styles.chatRoomList}
         renderItem={({ item }) => (
           <TouchableOpacity
-            style={styles.chatRoomButton}
-            onPress={() => {
-              navigation.navigate('Chat', {
-                userDisplayName: user?.displayName,
-                userPhotoURL: user?.photoURL,
-              });
-            }}
-          >
-            <Text style={styles.buttonText}>{item.name}</Text>
-          </TouchableOpacity>
+          style={[
+            styles.chatRoomButton,
+            currentRoomNumber === item.id ? styles.activeRoom : null,
+          ]}
+          onPress={() => {
+            setCurrentRoomNumber(item.id);
+            navigation.navigate('Chat', {
+              userDisplayName: user?.displayName,
+              userPhotoURL: user?.photoURL,
+              currentRoomNumber: item.id,
+            });
+          }}
+        >
+          <Text style={styles.buttonText}>{item.name}</Text>
+        </TouchableOpacity>
         )}
       />
     </View>
@@ -91,6 +101,9 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: '#f0f0f0',
+  },
+  activeRoom: {
+    opacity: 0.7,
   },
   heading: {
     fontSize: 18,
