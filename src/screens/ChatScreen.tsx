@@ -1,24 +1,38 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, FlatList, StyleSheet, TextInput, Button } from 'react-native';
+import app from '../config/config';
+import { collection, addDoc, Firestore, serverTimestamp, getFirestore } from 'firebase/firestore'; 
+import db from '../config/config';
 
-const dummyMessages = [
-  { id: '1', text: 'Hello!', sender: 'User' },
-  { id: '2', text: 'Hi there!', sender: 'Friend' },
-  { id: '3', text: 'How are you?', sender: 'User' },
-  { id: '4', text: "I'm good, thanks!", sender: 'Friend' },
-  // Add more messages as needed
-];
 
-const ChatScreen: React.FC = ({ navigation }) => {
 
-  const [message, setMessage] = useState('');
-  const [messages, setMessages] = useState(dummyMessages);
+const ChatScreen: React.FC = () => {
+  const [message, setMessage] = useState<string>('');
+  const [messages, setMessages] = useState<any[]>([]); // Adjust the type accordingly
+  const messagesCollection = collection(db, 'messages');
 
-  function handleSend(){
-    if(message === "") return;
-    console.log(message);
+  async function handleSend() {
+
+    
+    if (message === '') return;
+
+   
+    const newMessage = {
+      text: message,
+      timestamp: serverTimestamp(),
+    };
 
     setMessage('');
+
+    try {
+      const docRef = await addDoc(messagesCollection, newMessage);
+      console.log('Document written');
+    } catch (error) {
+      console.error('Error adding document: ', error);
+    }
+
+   
+   console.log(message);
   }
 
   return (
