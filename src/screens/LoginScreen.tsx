@@ -31,6 +31,7 @@ const LoginScreen: React.FC = ({ navigation }) => {
   }
   return (
     <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#8B31E6' }}>
+      <Text style={styles.welcomeText}>Welcome to Vega</Text>
       {loading ? (
         <ActivityIndicator size="large" color="#FFFFFF" />
       ) : (
@@ -43,6 +44,20 @@ const LoginScreen: React.FC = ({ navigation }) => {
       )}
     </View>
   );
+};
+
+const styles = {
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#8B31E6',
+  },
+  welcomeText: {
+    fontSize: 48,
+    color: 'white',
+    fontFamily: 'Tahoma', 
+  },
 };
 
 export default LoginScreen;

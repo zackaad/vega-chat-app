@@ -1,14 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TouchableOpacity, FlatList, StyleSheet, Image } from 'react-native';
+import {Pressable, View, Text, TouchableOpacity, FlatList, StyleSheet, Image, StatusBar } from 'react-native';
 import auth, { FirebaseUser } from '@react-native-firebase/auth';
 import { GoogleSignin, GoogleSigninButton } from '@react-native-google-signin/google-signin';
-
 
 GoogleSignin.configure({
   webClientId: '576966639179-laprvni5190t516hgub7dpcj3u0fpaho.apps.googleusercontent.com',
 });
-
-
 
 interface ChatRoom {
   id: string;
@@ -28,7 +25,7 @@ const chatRooms: ChatRoom[] = [
 
 const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
   const [user, setUser] = useState<FirebaseUser | null>(null);
-  const [currentRoomNumber, setCurrentRoomNumber] = useState<string>('1') ;
+  const [currentRoomNumber, setCurrentRoomNumber] = useState<string>('1');
 
   function onAuthStateChanged(user: FirebaseUser | null) {
     setUser(user);
@@ -37,6 +34,7 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
   useEffect(() => {
     const subscriber = auth().onAuthStateChanged(onAuthStateChanged);
     return () => subscriber(); // Unsubscribe on unmount
+    
   }, []);
 
   const signOut = async () => {
@@ -51,6 +49,7 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
+      <StatusBar barStyle="light-content" backgroundColor="#8B31E6" />
       {user ? (
         <View style={styles.userContainer}>
           {user.photoURL && (
@@ -63,71 +62,104 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
           </View>
         </View>
       ) : (
-        <Text>Not signed in</Text>
+        <Text style={styles.notSignedInText}>Not signed in</Text>
       )}
-      <Text style={styles.heading}>Welcome {user?.displayName}</Text>
-      <Text style={styles.heading}>Choose a chatroom:</Text>
+      <Text style={styles.heading}>Welcome, {user?.displayName}</Text>
+      <Text style={styles.subheading}>Choose a chatroom:</Text>
       <FlatList
         data={chatRooms}
         keyExtractor={(item) => item.id}
         contentContainerStyle={styles.chatRoomList}
         renderItem={({ item }) => (
-          <TouchableOpacity
-          style={[
-            styles.chatRoomButton,
-            currentRoomNumber === item.id ? styles.activeRoom : null,
-          ]}
-          onPress={() => {
-            setCurrentRoomNumber(item.id);
-            navigation.navigate('Chat', {
-              userDisplayName: user?.displayName,
-              userPhotoURL: user?.photoURL,
-              currentRoomNumber: item.id,
-            });
-          }}
-        >
-          <Text style={styles.buttonText}>{item.name}</Text>
-        </TouchableOpacity>
+          <Pressable
+            style={[
+              styles.chatRoomButton,
+            ]}
+            onPress={() => {
+              setCurrentRoomNumber(item.id);
+              navigation.navigate('Chat', {
+                userDisplayName: user?.displayName,
+                userPhotoURL: user?.photoURL,
+                currentRoomNumber: item.id,
+              });
+            }}
+          >
+            
+            <Text style={styles.buttonText}>{item.name}</Text>
+          </Pressable>
         )}
       />
     </View>
   );
 };
 
+
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#8B31E6', // Set the background color to purple
+    backgroundColor: '#8B31E6',
+  padding: 16,
+  paddingTop: 32,
+  paddingBottom: 0,
+  justifyContent: 'flex-start',
+  alignItems: 'center',
+  marginBottom: 24,
+  marginTop: 0,
+  borderTopRightRadius: 32,
+  borderTopLeftRadius: 32,
+  borderWidth: 2,
+  borderColor: '#fff',
+  shadowColor: '#000',
+  shadowOffset: {
+    width: 0,
+    height: 5,
   },
+  shadowOpacity: 0.3,
+  shadowRadius: 6,
+  elevation: 5,
+  borderTopWidth: 0,
+},
   activeRoom: {
     opacity: 0.7,
+    backgroundColor: '#8B31E6',
   },
   heading: {
+    fontSize: 24,
+    color: 'white',
+    marginBottom: 16,
+  },
+  subheading: {
     fontSize: 18,
     color: 'white',
-    padding: 50 
+    marginBottom: 8,
   },
   chatRoomList: {
-    justifyContent: 'center',
     flexGrow: 1,
-  },
+    justifyContent: 'center',
+  width: '100%',
+  marginBottom: 16,
+  paddingHorizontal: 16,
+},
   chatRoomButton: {
     padding: 15,
     marginVertical: 10,
-    backgroundColor: 'grey',
-    borderRadius: 5,
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    borderRadius: 8,
     width: '100%',
-  },
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 16,
+},
   buttonText: {
     color: 'white',
-    textAlign: 'center',
+    fontSize: 16,
   },
   userContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 20,
+    marginBottom: 16,
   },
   userImage: {
     width: 50,
@@ -138,11 +170,17 @@ const styles = StyleSheet.create({
     marginLeft: 20,
   },
   signOutButton: {
-    padding: 10,
-    backgroundColor: 'grey',
-    borderRadius: 5,
-    marginTop: 10,
+    padding: 12,
+    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+    borderRadius: 8,
+  },
+  notSignedInText: {
+    fontSize: 16,
+    color: 'white',
+    marginBottom: 16,
   },
 });
+
+
 
 export default HomeScreen;

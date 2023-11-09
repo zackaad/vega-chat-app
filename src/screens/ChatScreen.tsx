@@ -1,10 +1,11 @@
-import React, { useState, useEffect, useRef} from 'react';
-import { View, Text, FlatList, StyleSheet, TextInput, Button, Image} from 'react-native';
-import app from '../config/config';
-import { collection, addDoc, Firestore, serverTimestamp, getFirestore, orderBy, query, onSnapshot, limit } from 'firebase/firestore'; 
+import React, { useState, useEffect, useRef } from 'react';
+import { View, Text, FlatList, StyleSheet, TextInput, Button, Image, TouchableOpacity } from 'react-native';
+import { collection, addDoc, serverTimestamp, query, onSnapshot, limit, orderBy } from 'firebase/firestore';
 import db from '../config/config';
 import 'firebase/auth';
 import { useRoute } from '@react-navigation/native';
+import ImagePicker from 'react-native-image-picker'; // Import ImagePicker
+
 
 interface RouteParams {
   userDisplayName: string | undefined;
@@ -14,7 +15,9 @@ interface RouteParams {
 
 const ChatScreen: React.FC = () => {
   const [message, setMessage] = useState<string>('');
-  const [messages, setMessages] = useState<any[]>([]); 
+  const [messages, setMessages] = useState<any[]>([]);
+  const [image, setImage] = useState<string | null>(null); 
+ 
  
 
  
