@@ -10,6 +10,7 @@ import com.facebook.react.defaults.DefaultReactNativeHost;
 import com.facebook.soloader.SoLoader;
 import java.util.List;
 import org.devio.rn.splashscreen.SplashScreenReactPackage;
+import io.invertase.firebase.storage.ReactNativeFirebaseStoragePackage;
 
 public class MainApplication extends Application implements ReactApplication {
 
@@ -23,8 +24,13 @@ public class MainApplication extends Application implements ReactApplication {
 
         @Override
         protected List<ReactPackage> getPackages() {
+          
           @SuppressWarnings("UnnecessaryLocalVariable")
+          
           List<ReactPackage> packages = new PackageList(this).getPackages();
+
+          new  ReactNativeFirebaseStoragePackage();
+          
           // Packages that cannot be autolinked yet can be added manually here, for example:
           // packages.add(new MyReactNativePackage());
           return packages;
@@ -39,6 +45,8 @@ public class MainApplication extends Application implements ReactApplication {
         protected boolean isNewArchEnabled() {
           return BuildConfig.IS_NEW_ARCHITECTURE_ENABLED;
         }
+
+        
 
         @Override
         protected Boolean isHermesEnabled() {

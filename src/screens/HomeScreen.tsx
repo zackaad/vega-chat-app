@@ -3,19 +3,23 @@ import {Pressable, View, Text, TouchableOpacity, FlatList, StyleSheet, Image, St
 import auth, { FirebaseUser } from '@react-native-firebase/auth';
 import { GoogleSignin, GoogleSigninButton } from '@react-native-google-signin/google-signin';
 
+//Configures the connection to firebase!
 GoogleSignin.configure({
   webClientId: '576966639179-laprvni5190t516hgub7dpcj3u0fpaho.apps.googleusercontent.com',
 });
 
+//Chatroom interface
 interface ChatRoom {
   id: string;
   name: string;
 }
 
+//This allows for exporting const like the username and the avatar
 interface HomeScreenProps {
-  navigation: any; // Replace with your specific navigation prop type
+  navigation: any; 
 }
 
+//Chatrooms
 const chatRooms: ChatRoom[] = [
   { id: '1', name: 'Science' },
   { id: '2', name: 'Fitness' },
@@ -23,6 +27,8 @@ const chatRooms: ChatRoom[] = [
   { id: '4', name: 'Technology' },
 ];
 
+
+//Homescreen component
 const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
   const [user, setUser] = useState<FirebaseUser | null>(null);
   const [currentRoomNumber, setCurrentRoomNumber] = useState<string>('1');
@@ -31,12 +37,14 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
     setUser(user);
   }
 
+  //useEfect 
   useEffect(() => {
     const subscriber = auth().onAuthStateChanged(onAuthStateChanged);
-    return () => subscriber(); // Unsubscribe on unmount
+    return () => subscriber(); 
     
   }, []);
 
+  //Signs the user out of Google
   const signOut = async () => {
     try {
       await GoogleSignin.signOut();
@@ -47,6 +55,7 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
     }
   };
 
+  //Return function that renders the screen, messages avatar etc.
   return (
     <View style={styles.container}>
       <StatusBar barStyle="light-content" backgroundColor="#8B31E6" />
@@ -94,7 +103,7 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
 };
 
 
-
+//Styling of the screen
 const styles = StyleSheet.create({
   container: {
     flex: 1,

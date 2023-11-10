@@ -4,7 +4,9 @@ import { collection, addDoc, serverTimestamp, query, onSnapshot, limit, orderBy 
 import db from '../config/config';
 import 'firebase/auth';
 import { useRoute } from '@react-navigation/native';
-import ImagePicker from 'react-native-image-picker'; // Import ImagePicker
+import ImagePicker, { launchImageLibrary } from 'react-native-image-picker';
+import { getStorage, ref , uploadBytes, getBlob, getDownloadURL} from '@firebase/storage';
+import { getApp } from 'firebase/app';
 
 
 interface RouteParams {
@@ -16,11 +18,34 @@ interface RouteParams {
 const ChatScreen: React.FC = () => {
   const [message, setMessage] = useState<string>('');
   const [messages, setMessages] = useState<any[]>([]);
-  const [image, setImage] = useState<string | null>(null); 
- 
+  const [image, setImage] = useState<string | null>(null);
  
 
- 
+  
+
+  const openImageGallery = () => {
+    const options = {
+      title: 'Select Image',
+      storageOptions: {
+        skipBackup: true,
+      },
+    };
+
+
+    launchImageLibrary(options, (response) => {
+      if (response.didCancel) {
+        // User canceled the image picker
+      } else if (response.error) {
+        console.error('ImagePicker Error: ', response.error);
+      } else {
+        // Image selected successfully
+        const selectedImageUri = response.assets[0].uri;
+        setImage(selectedImageUri);
+      }
+    });
+    
+  };
+
   const route = useRoute();
   const { userDisplayName, userPhotoURL, currentRoomNumber } = route.params as RouteParams;
   const flatListRef = useRef<FlatList | null>(null);
@@ -29,16 +54,9 @@ const ChatScreen: React.FC = () => {
     `chatRooms/room/${currentRoomNumber}`
   );
 
-
-
-
-
   useEffect(() => {
-
-    
     const q = query(messageCollection, orderBy('timestamp'), limit(50));
 
-    
     const unsubscribe = onSnapshot(q, (querySnapshot) => {
       const newMessages: any[] = [];
       querySnapshot.forEach((doc) => {
@@ -52,46 +70,34 @@ const ChatScreen: React.FC = () => {
     };
   }, []);
 
-
   async function handleSend() {
-
-    
-    if (message === '') return;
-
-    console.log(`chatRooms/room/${currentRoomNumber}`)
-
-   
+    if (message === '' && !image) return;
+  
     const newMessage = {
       text: message,
       timestamp: serverTimestamp(),
       userID: userDisplayName,
-      
+      imageURL: image ? image : null,
+      isImage: !!image
     };
-
-    setMessage('');
-
+  
     try {
       const docRef = await addDoc(messageCollection, newMessage);
       console.log('Document written');
     } catch (error) {
       console.error('Error adding document: ', error);
     }
-
-   
-   console.log(message);
+  
+    console.log('Message:', message, 'Image:', image);
+    setMessage('');
+    setImage(null);
   }
 
-  useEffect(() => {
-    // Scroll to the bottom when the component mounts and when a new message arrives
-    if (flatListRef.current) {
-      flatListRef.current.scrollToEnd({ animated: true });
-    }
-  }, [messages]);
-
+  
   return (
     <View style={styles.container}>
       <FlatList
-  ref={(ref) => (flatListRef.current = ref)}
+      ref={(ref) => (flatListRef.current = ref)}
   data={messages}
   keyExtractor={(item) => item.id}
   renderItem={({ item }) => (
@@ -100,17 +106,25 @@ const ChatScreen: React.FC = () => {
         <Image source={{ uri: userPhotoURL }} style={styles.userImage} />
       )}
       <View style={styles.messageContent}>
-        <Text style={styles.senderName}>
-          {item.userID}:
-        </Text>
-        <Text style={styles.messageText}>
-          {item.text}
-        </Text>
-      </View>
+  <Text style={styles.senderName}>
+    {item.userID}:
+  </Text>
+  {item.isImage ? (
+    <Image source={{ uri: item.imageURL }} style={styles.messageImage} />
+  ) : (
+    <Text style={styles.messageText}>
+      {item.text}
+    </Text>
+  )}
+  {item.timestamp && (
+    <Text style={styles.timestampText}>
+      {item.timestamp.toDate().toLocaleTimeString()}
+    </Text>
+  )}
+</View>
     </View>
   )}
   onContentSizeChange={() => {
-    // Automatically scroll to the bottom when content size changes (new message)
     if (flatListRef.current) {
       flatListRef.current.scrollToEnd({ animated: true });
     }
@@ -124,12 +138,25 @@ const ChatScreen: React.FC = () => {
           onChangeText={(text) => setMessage(text)}
         />
         <Button title="Send" onPress={handleSend} />
+        <TouchableOpacity onPress={openImageGallery}>
+          <Text>   Attach image</Text>
+        </TouchableOpacity>
       </View>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
+  timestampText: {
+  color: 'black', // Black text color for the timestamp
+  fontSize: 12, // Adjust the font size as needed
+},
+  messageImage: {
+    width: 200, // You can adjust the width and height as needed
+    height: 200,
+    borderRadius: 8,
+  },
+  
   senderMessageContainer: {
     flexDirection: 'row', // Arrange contents in a row
     alignItems: 'center', // Align items vertically
@@ -181,7 +208,6 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
     borderRadius: 8,
     marginTop: 16,
-
   },
   input: {
     flex: 1,
