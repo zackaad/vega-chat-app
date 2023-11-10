@@ -35,7 +35,7 @@ To run Vega on your device, follow these steps:
 
 ## Contributors
 
-- Zackaria Aaden: [Your GitHub Profile](https://github.com/zackaad)
+- Zackaria Aaden: GitHub: (https://github.com/zackaad)
 
 
 
