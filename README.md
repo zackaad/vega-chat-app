@@ -24,7 +24,7 @@ To run Vega on your device, follow these steps:
 
 4. Run the app on an emulator or physical device using `npm start` or `yarn start`.
 
-5. Ready to start the app
+5. Ready to start the app with `npx react-native run-android`
 
 ## Technologies Used
 
